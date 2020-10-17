@@ -67,7 +67,7 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                           p("Thank you to the Professor and Teaching Staff at Gov50 for
                teaching me the art of data science"),
                           p("This project's GitHub repository lives",
-                            a("here", href = "https://github.com/joshwillcox/Shiny_App_Final_Project")))
+                            a("here", href = "https://github.com/joshwillcox/Shiny_App_Milestone_4")))
                  
 )
 
