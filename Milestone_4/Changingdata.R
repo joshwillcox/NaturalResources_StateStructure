@@ -16,4 +16,10 @@ first_graph <- second_clean %>%
   geom_smooth(method = lm) +
   labs(x = "Natural Resources Rent as % of GDP",
        y = "Tax Revenue as % of GDP",
-       title = "")
+       title = "Relationship Between Tax Revenue and Natural Resources
+                          Rent as % of GDP",
+       subtitle  = "Does Depending on Natural Resources Mean Taxing 
+                              Less?",
+       caption = "Source: World Bank Development Inidicators")
+
+covid_data <- read_csv("Milestone_4/raw_data/WHO-COVID-19-global-data.csv")
