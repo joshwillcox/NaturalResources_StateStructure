@@ -9,7 +9,10 @@
 
 library(shiny)
 library(shinythemes)
-read_rds("first_clean")
+library(readr)
+library(tidyverse)
+library(janitor)
+first_clean <- read_rds("first_clean")
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(theme = shinytheme("yeti"),
