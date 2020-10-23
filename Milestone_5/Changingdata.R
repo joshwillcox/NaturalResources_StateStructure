@@ -1,4 +1,19 @@
-first_clean <- read_rds("Milestone_4/first_clean")
+library(tidyverse)
+library(readr)
+library(shiny)
+library(shinythemes)
+library(janitor)
+library(readr)
+library(ggplot2)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(rgeos)
+
+source("reading_in.R")
+
+view(first_clean)
+
 
 second_clean <- first_clean %>%
   select(country_name, country_code, indicator_name, x2015:x2018) %>%
@@ -12,14 +27,30 @@ second_clean <- first_clean %>%
 
 first_graph <- second_clean %>% 
   ggplot(aes(x = total_natural_resources_rents_percent_of_gdp, y = tax_revenue_percent_of_gdp)) +
-  geom_point() +
-  geom_smooth(method = lm) +
+  geom_point(color = "red") +
+  geom_smooth(method = lm,
+              se = FALSE,
+              color = "dodgerblue") +
   labs(x = "Natural Resources Rent as % of GDP",
        y = "Tax Revenue as % of GDP",
-       title = "Relationship Between Tax Revenue and Natural Resources
-                          Rent as % of GDP",
-       subtitle  = "Does Depending on Natural Resources Mean Taxing 
-                              Less?",
+       title = "Relationship Between Tax Revenue and Natural Resources Rent as % of GDP",
+       subtitle  = "Does Depending on Natural Resources Mean Taxing Less?",
        caption = "Source: World Bank Development Inidicators")
 
-covid_data <- read_csv("Milestone_4/raw_data/WHO-COVID-19-global-data.csv")
+world_map
+
+ne_countries
+world_map <- read_csv("raw_data/OGRGeoJSON.csv")
+reprex(world_map_new <- world_map %>%
+  rename(geometry = the_geom) %>%
+  ggplot() +
+  geom_sf())
+  
+military_graphs
+
+first
+0
+world_map_new
+
+
+
