@@ -37,20 +37,8 @@ first_graph <- second_clean %>%
        subtitle  = "Does Depending on Natural Resources Mean Taxing Less?",
        caption = "Source: World Bank Development Inidicators")
 
-world_map
 
-ne_countries
-world_map <- read_csv("raw_data/OGRGeoJSON.csv")
-reprex(world_map_new <- world_map %>%
-  rename(geometry = the_geom) %>%
-  ggplot() +
-  geom_sf())
-  
-military_graphs
 
-first
-0
-world_map_new
 
 
 

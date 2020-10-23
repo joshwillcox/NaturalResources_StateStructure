@@ -17,17 +17,14 @@ about_p1 <- "For my project, I want to look at the effects that natural
               tax revenue as a  percentage of GDP and natural resource rents as 
               a percentage of GDP."
 
-about_p2 <- "One of the data frames that I need to bring in to this project
-              is one which allows me to make maps that correspond to the 
-              countries as I'd like to be able to create a map that shows the 
-              countries which rely on natural resources the most. I also need
-              to work alot on the best way to keep all my data and what the 
-              'gather' files should look like because I am quite confused about
-              that at the moment. I haven't uploaded any of my raw_data files 
-              because they were too big for a github push, and so I don't know
-              the right format for the other things. Should graphs be kept in 
-              seperate files? Hopefully I can ask some of these questions in 
-              recitation!"
+about_p2 <- "I still need to find a way to create the map of the world as the 
+             data frame which I downloaded hasn't worked so far. I also want to
+             create a tab that has a panel which lets me look at each country 
+             and the factors within each country such as tax revenue as a 
+             percentage of state revenue or natural resources. The map issue is 
+             my biggest issue at the moment. This week, I created the seperate
+             R file to put all my text and was able to bring in my graph without 
+             copy and pasting from my changingdata.R file"
 
 about_p3 <- "My name is Josh Willcox and I am currently a second-year 
               undergraduate intending to do a joint concentration in Near 
