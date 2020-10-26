@@ -30,6 +30,7 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                                        column(5,
                                               h3("Tax Revenue vs Resource Revenue"),
                                               p(tab1_row1_col)))
+                              
                           )
                  ),
                  

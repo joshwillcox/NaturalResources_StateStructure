@@ -37,6 +37,15 @@ first_graph <- second_clean %>%
        subtitle  = "Does Depending on Natural Resources Mean Taxing Less?",
        caption = "Source: World Bank Development Inidicators")
 
+library("rnaturalearth")
+library("rnaturalearthdata")
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+
+countrynames_worldmap <- world %>%
+  select(name, geometry) %>%
+  as_tibble()
 
 
 
