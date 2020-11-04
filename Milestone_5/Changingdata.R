@@ -9,10 +9,9 @@ library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(rgeos)
+library(PPBDS.data)
 
 source("reading_in.R")
-
-view(first_clean)
 
 
 second_clean <- first_clean %>%
@@ -45,9 +44,21 @@ world <- ne_countries(scale = "medium", returnclass = "sf")
 
 countrynames_worldmap <- world %>%
   select(name, geometry) %>%
-  as_tibble()
+  mutate(name = as.factor(name)) %>%
+  rename(country_name = name)
+ 
 
+world_map <- countrynames_worldmap %>%
+  ggplot() +
+  geom_sf()
 
+view(first_clean)
+
+new <- countrynames_worldmap %>%
+left_join(first_clean, by = "country_name") %>%
+select(geometry, country_name, indicator_name, x2015:x2018) %>%
+mutate(average = mean(x2015, x2018))
+glimpse(new)
 
 
 

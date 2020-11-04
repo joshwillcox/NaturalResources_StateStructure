@@ -46,7 +46,17 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                teaching me the art of data science"),
                           p("This project's GitHub repository lives",
                             a("here", href = "https://github.com/joshwillcox/Shiny_App_Milestone_4"))),
-                 tabPanel("Comparing Countries")
+                 
+                 tabPanel("Comparing Countries",
+                          fluidPage(
+                            fluidRow(column(7, 
+                                            plotOutput("world_map")),
+                                     column(5,
+                                            h3("World Map")
+                                     )
+                            
+                          )
+                          )
                  
 )
 
@@ -54,7 +64,15 @@ ui <- navbarPage(theme = shinytheme("yeti"),
 server <- function(input, output) {
     
     output$Resource_rent_vs_tax_revenue_GDP <- renderPlot({
+      
         first_graph
+      
+
+    }),
+    
+    output$world_map <- renderPlot({
+      
+      world_map
     })
 }
 
