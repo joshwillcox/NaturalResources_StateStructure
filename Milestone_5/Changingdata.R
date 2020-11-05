@@ -56,9 +56,7 @@ view(first_clean)
 
 new <- countrynames_worldmap %>%
 left_join(first_clean, by = "country_name") %>%
-select(geometry, country_name, indicator_name, x2015:x2018) %>%
-mutate(average = mean(x2015, x2018))
-glimpse(new)
+select(geometry, country_name, indicator_name, x2015:x2018)
 
 
 
