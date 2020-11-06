@@ -53,62 +53,20 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                               
                               selectInput(
                                 "varOI_x",
-                                "X variable:",
+                                "Country Measurements",
                                 choices = c(
-                                  "Number of conflict events" = "event_count",
-                                  "Total basin GDP" = "gdp_total",
-                                  "Average GDP" = "gdp_avg",
-                                  "Total basin population" = "pop_total",
-                                  "Average population" = "pop_avg",
-                                  "Average % GDP made up by trade" = "trade_percent_gdp_avg",
-                                  "Average rate of water consumption" = "water_withdraw_avg",
-                                  "Total basin agricultural land" = "ag_land_total",
-                                  "Average agricultural land" = "ag_land_avg",
-                                  "Average % of population affected by drought" = "droughts_avg",
-                                  "Average democratization index score" = "eiu_avg",
-                                  "Log(number of conflict events)" = "event_count_log",
-                                  "Log(total basin GDP)" = "gdp_total_log",
-                                  "Log(average GDP)" = "gdp_avg_log",
-                                  "Log(total basin population)" = "pop_total_log",
-                                  "Log(average population)" = "pop_avg_log",
-                                  "Log(average % gdp made up by trade)" = "trade_percent_gdp_avg_log",
-                                  "Log(average rate of water consumption)" = "water_withdraw_avg_log",
-                                  "Log(total basin agricultural land)" = "ag_land_total_log",
-                                  "Log(average agricultural land)" = "ag_land_avg_log",
-                                  "Log(average % of population affected by drought)" = "droughts_avg_log",
-                                  "Log(average democratization index score)" = "eiu_avg_log"
-                                )),
-                    
-                              
-                              # Select Y variable(s) for model.
-                              
-                              selectInput(
-                                "varOI_y",
-                                "Y variable:",
-                                choices = c(
-                                  "Number of conflict events" = "event_count",
-                                  "Total basin GDP" = "gdp_total",
-                                  "Average GDP" = "gdp_avg",
-                                  "Total basin population" = "pop_total",
-                                  "Average population" = "pop_avg",
-                                  "Average % GDP made up by trade" = "trade_percent_gdp_avg",
-                                  "Average rate of water consumption" = "water_withdraw_avg",
-                                  "Total basin agricultural land" = "ag_land_total",
-                                  "Average agricultural land" = "ag_land_avg",
-                                  "Average % of population affected by drought" = "droughts_avg",
-                                  "Average democratization index score" = "eiu_avg",
-                                  "Log(number of conflict events)" = "event_count_log",
-                                  "Log(total basin GDP)" = "gdp_total_log",
-                                  "Log(average GDP)" = "gdp_avg_log",
-                                  "Log(total basin population)" = "pop_total_log",
-                                  "Log(average population)" = "pop_avg_log",
-                                  "Log(average % gdp made up by trade)" = "trade_percent_gdp_avg_log",
-                                  "Log(average rate of water consumption)" = "water_withdraw_avg_log",
-                                  "Log(total basin agricultural land)" = "ag_land_total_log",
-                                  "Log(average agricultural land)" = "ag_land_avg_log",
-                                  "Log(average % of population affected by drought)" = "droughts_avg_log",
-                                  "Log(average democratization index score)" = "eiu_avg_log"
-                                  ))),
+                                  "Business Regulatory Environment" = "CPIA business regulatory environment rating (1=low to 6=high)",
+                                  "Efficency of Revenue Mobilisation" = "CPIA efficiency of revenue mobilization rating (1=low to 6=high)",
+                                  "Property Rights and Rule Based Governance" = "CPIA property rights and rule-based governance rating (1=low to 6=high)",
+                                  "Quality of Public Administration" = "CPIA quality of public administration rating (1=low to 6=high)",
+                                  "Transparency and Accountability in the Public Sector" = "CPIA transparency, accountability, and corruption in the public sector rating (1=low to 6=high)",
+                                  "Military expenditure as % of general government expenditure" = "Military expenditure (% of general government expenditure)",
+                                  "Mineral rents as % of GDP" = "Mineral rents (% of GDP)",
+                                  "Oil rents as % of GDP" = "Oil rents (% of GDP)",
+                                  "Ores and metals exports (% of merchandise exports)" = "Ores and metals exports (% of merchandise exports)",
+                                  "Tax revenue as % of GDP" = "Tax revenue (% of GDP)",
+                                  "Total natural resources rents as % of GDP" = "Total natural resources rents (% of GDP)"
+                                ))),
                             
                             mainPanel(
                             
@@ -152,9 +110,22 @@ server <- function(input, output) {
       
     })
     
-    output$CountryIndicator <- renderPlot({
+    output$Country_Indicator <- renderPlot({
       
-      Country_Indicator
+      x <- fixed_names %>%
+        filter(indicator_name == input$varOI_x) %>%
+        select(country_name, indicator_name, x2010:x2018) %>%
+        pivot_longer(cols = x2010:x2018, names_to = "year", values_to = "rating") %>%
+        group_by(country_name) %>%
+        summarise(average = mean(rating, na.rm = TRUE))
+      
+      
+      countrynames_worldmap %>%
+        left_join(x, by = "country_name") %>%
+        ggplot(aes(fill = average)) +
+        geom_sf()
+      
+    
     })
 }
 
