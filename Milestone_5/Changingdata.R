@@ -9,7 +9,6 @@ library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(rgeos)
-library(PPBDS.data)
 
 source("reading_in.R")
 
@@ -44,7 +43,6 @@ world <- ne_countries(scale = "medium", returnclass = "sf")
 
 countrynames_worldmap <- world %>%
   select(name, geometry) %>%
-  mutate(name = as.factor(name)) %>%
   rename(country_name = name)
  
 
@@ -54,9 +52,39 @@ world_map <- countrynames_worldmap %>%
 
 view(first_clean)
 
+
+
+Country_Indicator <- first_clean %>%
+  filter(indicator_name == "Oil rents (% of GDP)") %>%
+  mutate(country_name = str_replace(country_name, pattern = "Russian Federation", replacement = "Russia")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Yemen, Rep.", replacement = "Yemen")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Venezuela, RB", replacement = "Venezuela")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Iran, Islamic Rep.", replacement = "Iran")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Egypt, Arab Rep.", replacement = "Egypt")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Syrian Arab Republic", replacement = "Syria")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Congo, Dem. Rep.", replacement = "Dem. Rep. Congo")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Congo, Rep.", replacement = "Congo")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "South Sudan", replacement = "S. Sudan")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Central African Republic", replacement = "Central African Rep.")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Cote d'Ivoire", replacement = "Côte d'Ivoire")) %>%
+   select(country_name, indicator_name, x2010:x2018) %>%
+  pivot_longer(cols = x2010:x2018, names_to = "year", values_to = "Percentage") %>%
+  group_by(country_name) %>%
+  summarise(average = mean(Percentage, na.rm = TRUE))
+
 new <- countrynames_worldmap %>%
-left_join(first_clean, by = "country_name") %>%
-select(geometry, country_name, indicator_name, x2015:x2018)
+  left_join(Country_Indicator, by = "country_name") %>%
+  ggplot(aes(fill = average)) +
+  geom_sf()
+
+class(new)
+
+glimpse(Country_Indicator)
+
+glimpse(countrynames_worldmap)
+
+  
+
 
 
 

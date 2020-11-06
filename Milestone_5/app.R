@@ -107,10 +107,15 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                                   "Log(total basin agricultural land)" = "ag_land_total_log",
                                   "Log(average agricultural land)" = "ag_land_avg_log",
                                   "Log(average % of population affected by drought)" = "droughts_avg_log",
-                                  "Log(average democratization index score)" = "eiu_avg_log")
-                                  
-                          
-                 ))),
+                                  "Log(average democratization index score)" = "eiu_avg_log"
+                                  ))),
+                            
+                            mainPanel(
+                            
+                              plotOutput("Country_Indicator")
+                            )
+                            
+                          )),
                  
                  
                  
@@ -129,7 +134,7 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                  
                  
 
-))
+)
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -143,8 +148,13 @@ server <- function(input, output) {
     
     output$world_map <- renderPlot({
       
-      world_map
+      new
       
+    })
+    
+    output$CountryIndicator <- renderPlot({
+      
+      Country_Indicator
     })
 }
 
