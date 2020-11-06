@@ -14,6 +14,7 @@ library(tidyverse)
 library(janitor)
 library(readr)
 first_clean <- read_rds("raw_data/first_clean")
+
 source("premade_text.R")
 source("Changingdata.R")
 
@@ -55,17 +56,28 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                                 "varOI_x",
                                 "Country Measurements",
                                 choices = c(
-                                  "Business Regulatory Environment" = "CPIA business regulatory environment rating (1=low to 6=high)",
-                                  "Efficency of Revenue Mobilisation" = "CPIA efficiency of revenue mobilization rating (1=low to 6=high)",
-                                  "Property Rights and Rule Based Governance" = "CPIA property rights and rule-based governance rating (1=low to 6=high)",
-                                  "Quality of Public Administration" = "CPIA quality of public administration rating (1=low to 6=high)",
-                                  "Transparency and Accountability in the Public Sector" = "CPIA transparency, accountability, and corruption in the public sector rating (1=low to 6=high)",
                                   "Military expenditure as % of general government expenditure" = "Military expenditure (% of general government expenditure)",
                                   "Mineral rents as % of GDP" = "Mineral rents (% of GDP)",
                                   "Oil rents as % of GDP" = "Oil rents (% of GDP)",
                                   "Ores and metals exports (% of merchandise exports)" = "Ores and metals exports (% of merchandise exports)",
                                   "Tax revenue as % of GDP" = "Tax revenue (% of GDP)",
-                                  "Total natural resources rents as % of GDP" = "Total natural resources rents (% of GDP)"
+                                  "Total natural resources rents as % of GDP" = "Total natural resources rents (% of GDP)",
+                                  "Armed forces personnel as % of total labor force" = "Armed forces personnel (% of total labor force)",
+                                  "Bribery incidence" = "Bribery incidence (% of firms experiencing at least one bribe payment request)",
+                                  "Central government debt, total (% of GDP)" = "Central government debt, total (% of GDP)",
+                                  "Ease of doing business index" = "Ease of doing business index (1=most business-friendly regulations)",
+                                  "GINI index" = "GINI index (World Bank estimate)",
+                                  "Government expenditure on education, total as % of GDP" = "Government expenditure on education, total (% of GDP)",
+                                  "Health expenditure, public as % of GDP" = "Health expenditure, public (% of GDP)",
+                                  "Internet users (per 100 people)" = "Internet users (per 100 people)",
+                                  "Rail lines (total route-km)" = "Rail lines (total route-km)",
+                                  "Strength of legal rights index (0=weak to 12=strong)",
+                                  "Time required to get electricity (days)",
+                                  "Time required to register property (days)"
+                                  
+                                  
+                                  
+                                  
                                 ))),
                             
                             mainPanel(
@@ -114,8 +126,8 @@ server <- function(input, output) {
       
       x <- fixed_names %>%
         filter(indicator_name == input$varOI_x) %>%
-        select(country_name, indicator_name, x2010:x2018) %>%
-        pivot_longer(cols = x2010:x2018, names_to = "year", values_to = "rating") %>%
+        select(country_name, indicator_name, x2010:x2016) %>%
+        pivot_longer(cols = x2010:x2016, names_to = "year", values_to = "rating") %>%
         group_by(country_name) %>%
         summarise(average = mean(rating, na.rm = TRUE))
       
