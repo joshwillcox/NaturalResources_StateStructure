@@ -137,6 +137,37 @@ fixed_names <- fixed_names1 %>%
   rbind(fixed_names2)
 
 
+regime_filter <- regime_type %>%
+  select(country, year, regime_r) %>%
+  filter(year %in% 2011) %>%
+  rename(country_name = country) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Republic", replacement = "Rep.")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Slovak Rep.", replacement = "Slovakia")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Bosnia", replacement = "Bosnia and Herz.")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Equatorial Guinea", replacement = "Eq. Guinea")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Ivory Coast", replacement = "Côte d'Ivoire")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Solomon Islands", replacement = "Solomon Is.")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "East Timor", replacement = "Timor-Leste")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Korea South", replacement = "Dem. Rep. Korea")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Korea North", replacement = "Korea")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "South Sudan", replacement = "S. Sudan")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Congo Kinshasa", replacement = "Dem. Rep. Congo")) %>%
+  mutate(country_name = str_replace(country_name, pattern = "Congo Brazzaville", replacement = "Congo")) %>%
+  filter(! regime_r == "NA")
+
+
+regime_map <- countrynames_worldmap %>%
+  left_join(regime_filter) %>%
+  ggplot(aes(fill = regime_r)) +
+    geom_sf() +
+    scale_fill_discrete(na.translate = FALSE,
+                        labels = c("Democracy", "Military Rule", "Monarchy", "Multiparty System", "Single Party System"),
+                        name = "Regime Type") +
+    labs(title = "World Map of Regime Types",
+         caption = "Source: https://cddrl.fsi.stanford.edu/research/autocracies_of_the_world_dataset")
+
+
+
 
 
 
