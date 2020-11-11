@@ -25,6 +25,13 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                  
                  tabPanel("Resource Dependence",
                           
+                          h3("How Are Natural Resource Dependence and State Structure Related?"),
+                          p(intro),
+                          h3("Things to Keep in Mind"),
+                          p(to_think_about),
+                          
+                          plotOutput("Resource_Dependence"),
+                          
                           fluidPage(
                               fluidRow(column(7, 
                                               plotOutput("Resource_rent_vs_tax_revenue_GDP")),
@@ -36,15 +43,6 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                  ),
                  
                  tabPanel("Comparing Countries",
-                          fluidPage(
-                            fluidRow(column(7, 
-                                            plotOutput("world_map")),
-                                     column(5,
-                                            h3("World Map")
-                                     )
-                                     
-                            )
-                          ),
                           
                           sidebarLayout(
                             sidebarPanel(
@@ -59,7 +57,6 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                                   "Military expenditure as % of general government expenditure" = "Military expenditure (% of general government expenditure)",
                                   "Mineral rents as % of GDP" = "Mineral rents (% of GDP)",
                                   "Oil rents as % of GDP" = "Oil rents (% of GDP)",
-                                  "Ores and metals exports (% of merchandise exports)" = "Ores and metals exports (% of merchandise exports)",
                                   "Tax revenue as % of GDP" = "Tax revenue (% of GDP)",
                                   "Total natural resources rents as % of GDP" = "Total natural resources rents (% of GDP)",
                                   "Armed forces personnel as % of total labor force" = "Armed forces personnel (% of total labor force)",
@@ -70,10 +67,8 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                                   "Government expenditure on education, total as % of GDP" = "Government expenditure on education, total (% of GDP)",
                                   "Health expenditure, public as % of GDP" = "Health expenditure, public (% of GDP)",
                                   "Internet users (per 100 people)" = "Internet users (per 100 people)",
-                                  "Rail lines (total route-km)" = "Rail lines (total route-km)",
                                   "Strength of legal rights index (0=weak to 12=strong)",
-                                  "Time required to get electricity (days)",
-                                  "Time required to register property (days)"
+                                  "Time required to get electricity (days)"
                                   
                                   
                                   
@@ -86,6 +81,7 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                             )
                             
                           )),
+                 tabPanel("Model"),
                  
                  
                  
@@ -108,6 +104,28 @@ ui <- navbarPage(theme = shinytheme("yeti"),
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  
+    output$Resource_Dependence <- renderPlot({
+      
+      
+      x <- fixed_names %>%
+        filter(indicator_name == "Total natural resources rents (% of GDP)" ) %>%
+        select(country_name, indicator_name, x2010:x2016) %>%
+        pivot_longer(cols = x2010:x2016, names_to = "year", values_to = "rating") %>%
+        group_by(country_name) %>%
+        summarise(average = mean(rating, na.rm = TRUE))
+
+
+      countrynames_worldmap %>%
+        left_join(x, by = "country_name") %>%
+        ggplot(aes(fill = average)) +
+        geom_sf() +
+        labs(title = "World Map Showing Natural Resource Rents as a % of GDP") +
+        scale_fill_viridis_c(option = "plasma",
+                             direction = -1)
+
+      
+    })
     
     output$Resource_rent_vs_tax_revenue_GDP <- renderPlot({
       
@@ -116,11 +134,6 @@ server <- function(input, output) {
 
     })
     
-    output$world_map <- renderPlot({
-      
-      new
-      
-    })
     
     output$Country_Indicator <- renderPlot({
       

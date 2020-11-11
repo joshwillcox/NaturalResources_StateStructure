@@ -1,3 +1,28 @@
+intro <- "There has been much speculation in academia about the effects of 
+          a country's reliance on natural resources. Some have argued that
+          when states can rely on natural resources for their financing,
+          they will not attempt to create effective states with a high tax 
+          extraction capacity. If they can get away with not taxing their 
+          population while remaining fiscally stable, they won't. Within this
+          project, I wanted to see if there were certain features of states that
+          correlated with a reliance on natural resources. I look at variables 
+          such as regime type, the strength of legal rights, military 
+          expenditure etc."
+
+to_think_about <- "One aspect of this project I have been very careful about is 
+                   drawing conclusions that suggest a causal relationship. While
+                   I can show that states which rely on natural resources are 
+                   more often less democratic, I can not claim that this
+                   reliance has caused authoritarianism to dominate. To draw 
+                   causal conclusions, I would have had to been able to 
+                   manipulate my data in some way, such as randomly assigning 
+                   natural resource endowment to certain states. This, obviously
+                   , is quite infeasible hence why I am careful about where I 
+                   make causal inferences."
+
+
+
+
 tab1_row1_col <- "This graph shows us that there is a negative 
                           correlation between the percentage of GDP that is 
                           from Tax Revenue and that which is from Natural 
