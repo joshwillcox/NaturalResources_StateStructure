@@ -29,17 +29,9 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                           p(intro),
                           h3("Things to Keep in Mind"),
                           p(to_think_about),
+                          plotOutput("Resource_Dependence")
                           
-                          plotOutput("Resource_Dependence"),
                           
-                          fluidPage(
-                              fluidRow(column(7, 
-                                              plotOutput("Resource_rent_vs_tax_revenue_GDP")),
-                                       column(5,
-                                              h3("Tax Revenue vs Resource Revenue"),
-                                              p(tab1_row1_col)))
-                              
-                          )
                  ),
                  
                  tabPanel("Comparing Countries",
@@ -81,7 +73,17 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                             )
                             
                           )),
-                 tabPanel("Model"),
+                 tabPanel("Model",
+                          
+                          
+                          fluidPage(
+                            fluidRow(column(7, 
+                                            plotOutput("Resource_rent_vs_tax_revenue_GDP")),
+                                     column(5,
+                                            h3("Tax Revenue vs Resource Revenue"),
+                                            p(tab1_row1_col)))
+                            
+                          )),
                  
                  
                  
