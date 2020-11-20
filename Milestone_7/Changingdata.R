@@ -9,6 +9,7 @@ library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(rgeos)
+library(rstanarm)
 
 source("reading_in.R")
 
@@ -31,7 +32,8 @@ first_graph <- first_clean %>%
        y = "Tax Revenue as % of GDP",
        title = "Relationship Between Tax Revenue and Natural Resources Rent as % of GDP",
        subtitle  = "Does Depending on Natural Resources Mean Taxing Less?",
-       caption = "Source: World Bank Development Inidicators")
+       caption = "Source: World Bank Development Inidicators") +
+  theme_linedraw()
 
 library("rnaturalearth")
 library("rnaturalearthdata")
@@ -171,7 +173,35 @@ regime_map <- countrynames_worldmap %>%
 
 
 
+d1 <- democracy_inidcator %>%
+  rename(democracy_indicator = `Political Regime (OWID based on Polity IV and Wimmer & Min)`,
+         country = "Entity") %>%
+  filter(Year %in% c(2010:2015)) %>%
+  group_by(country) %>%
+  summarise(indicator = mean(democracy_indicator)) %>%
+  rename(country_name = country)
 
+d2 <- fixed_names %>% 
+  filter(indicator_name == "Total natural resources rents (% of GDP)") %>%
+  select(country_name, x2010:x2015) %>%
+  pivot_longer(cols = x2010:x2015,
+               names_to = "Year",
+               values_to = "resource%") %>%
+  group_by(country_name) %>%
+  summarise(resource_average = mean(`resource%`))
+  
+d3 <- d2 %>%
+  left_join(d1, by = "country_name") %>%
+  drop_na()
+  
+fit_1 <- stan_glm(indicator ~ resource_average,
+                  data = d3,
+                  refresh = 0)
+
+# outcome as resource percentage, input as regime type and % of tax. consider
+# gdp growth, population indicator.
+
+print(fit_1, digits = 5)
 
 
   
