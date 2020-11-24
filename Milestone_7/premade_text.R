@@ -31,6 +31,8 @@ tab1_row1_col <- "This graph shows us that there is a negative
                           natural resources, are less likely to rely on tax
                           revenue"
 
+
+
 about_p1 <- "For my project, I want to look at the effects that natural 
               resources/foreign aid can have on the strucutre of the state and
               its capacity. In one of my classes recently, we talked about how

@@ -35,10 +35,11 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                  ),
                  
                  tabPanel("Comparing Countries",
+                          h3("Looking at State Efficiency"),
                           
                           sidebarLayout(
                             sidebarPanel(
-                              h4("Construct the Model:"),
+                              h4("Measurements of the State:"),
                               
                               # Select X variable(s) for model.
                               
@@ -72,7 +73,13 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                               plotOutput("Country_Indicator")
                             )
                             
-                          )),
+                          ),
+                          h3("Different Types of Regimes Worldwide"),
+                          fluidPage(fluidRow(column(6,
+                                                    gt_output("regime_count")),
+                                             column(6,
+                                                    plotOutput("regime_map"))
+                                             ))),
                  tabPanel("Model",
                           
                           
@@ -81,7 +88,16 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                                             plotOutput("Resource_rent_vs_tax_revenue_GDP")),
                                      column(5,
                                             h3("Tax Revenue vs Resource Revenue"),
-                                            p(tab1_row1_col)))
+                                            p(tab1_row1_col))),
+                            fluidRow(column(6,
+                                            gt_output("model1_table")),
+                                     column(6,
+                                            h3("Effects on Natural Resource Dependence"))),
+                            fluidRow(column(6,
+                                            h3("Effects on Tax Revenue")),
+                                     column(6,
+                                            gt_output("model2_table")))
+                             
                             
                           )),
                  
@@ -154,6 +170,29 @@ server <- function(input, output) {
       
     
     })
+    
+    output$regime_map <- renderPlot({
+      
+      regime_map
+    })
+    
+    output$regime_count <- render_gt({
+      
+      regime_count
+    })
+    
+    output$model1_table <- render_gt({
+      
+      model1_table
+    })
+    
+    output$model2_table <- render_gt({
+      
+    model2_table
+      
+    })
+    
+    
 }
 
 # Run the application 
