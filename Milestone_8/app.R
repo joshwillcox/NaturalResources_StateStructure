@@ -138,7 +138,8 @@ server <- function(input, output) {
         left_join(x, by = "country_name") %>%
         ggplot(aes(fill = average)) +
         geom_sf() +
-        labs(title = "World Map Showing Natural Resource Rents as a % of GDP") +
+        labs(title = "World Map Showing Natural Resource Rents as a % of GDP",
+             fill = "Percentage of GDP") +
         scale_fill_viridis_c(option = "plasma",
                              direction = -1)
 
