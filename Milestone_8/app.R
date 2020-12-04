@@ -13,6 +13,10 @@ library(readr)
 library(tidyverse)
 library(janitor)
 library(readr)
+library(gtsummary)
+library(broom.mixed)
+library(gt)
+
 first_clean <- read_rds("raw_data/first_clean")
 
 source("premade_text.R")
@@ -21,21 +25,25 @@ source("Changingdata.R")
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(theme = shinytheme("yeti"),
-                 "Type of State Revenue and State Capacity",
+                 "Types of State Revenue and Regime Type",
                  
                  tabPanel("Resource Dependence",
                           
-                          h3("How Are Natural Resource Dependence and State Structure Related?"),
+                          h3(strong("How Are Natural Resource Dependence and State Structure Related?")),
                           p(intro),
-                          h3("Things to Keep in Mind"),
+                          h3(strong("Things to Keep in Mind")),
                           p(to_think_about),
                           plotOutput("Resource_Dependence")
                           
+                         
                           
                  ),
                  
                  tabPanel("Comparing Countries",
-                          h3("Looking at State Efficiency"),
+                          h3(strong("Looking at State Effectiveness"), align = "center"),
+                          p(def_efficiency),
+                          HTML('<center><img src="C4I_nwsXAAIJGP_.jpg" width="400"></center>'),
+                          p(why_efficiency),
                           
                           sidebarLayout(
                             sidebarPanel(
@@ -54,7 +62,6 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                                   "Total natural resources rents as % of GDP" = "Total natural resources rents (% of GDP)",
                                   "Armed forces personnel as % of total labor force" = "Armed forces personnel (% of total labor force)",
                                   "Bribery incidence" = "Bribery incidence (% of firms experiencing at least one bribe payment request)",
-                                  "Central government debt, total (% of GDP)" = "Central government debt, total (% of GDP)",
                                   "Ease of doing business index" = "Ease of doing business index (1=most business-friendly regulations)",
                                   "GINI index" = "GINI index (World Bank estimate)",
                                   "Government expenditure on education, total as % of GDP" = "Government expenditure on education, total (% of GDP)",
@@ -66,20 +73,34 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                                   
                                   
                                   
-                                ))),
+                                ))
+                              
+                              ),
                             
                             mainPanel(
                             
                               plotOutput("Country_Indicator")
+                              
+                              
                             )
                             
                           ),
-                          h3("Different Types of Regimes Worldwide"),
+                          fluidPage(fluidRow(column(6,
+                                                    gt_output("top_10")),
+                                             column(6,
+                                                    p(interestingfinds),
+                                                    p(variablesexplanation))
+                          )),
+                          h3(strong("Different Types of Regimes Worldwide"), align = "center"),
+                          p(regime_exp),
                           fluidPage(fluidRow(column(6,
                                                     gt_output("regime_count")),
                                              column(6,
                                                     plotOutput("regime_map"))
-                                             ))),
+                                             )),
+                          hr(),
+                          print("Magaloni, Beatriz, Jonathan Chu, and Eric Min. 2013. Autocracies of the World, 1950-2012 (Version 1.0).
+Dataset, Stanford University.")),
                  tabPanel("Model",
                           
                           
@@ -93,6 +114,8 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                                             gt_output("model1_table")),
                                      column(6,
                                             h3("Effects on Natural Resource Dependence"))),
+                            fluidPage(withMathJax(),
+                                      helpText(formula1)),
                             fluidRow(column(6,
                                             h3("Effects on Tax Revenue")),
                                      column(6,
@@ -104,13 +127,13 @@ ui <- navbarPage(theme = shinytheme("yeti"),
                  
                  
                  tabPanel("About",
-                          h2("Project Ideas"),
+                          h2(strong("Project Ideas")),
                           p(about_p1),
-                          h2("Plans For Future Milestones"),
+                          h2(strong("Plans For Future Milestones")),
                           p(about_p2),
-                          h2("About Me"),
+                          h2(strong("About Me")),
                           p(about_p3),
-                          h2("Acknowledgements"),
+                          h2(strong("Acknowledgements")),
                           p("Thank you to the Professor and Teaching Staff at Gov50 for
                teaching me the art of data science"),
                           p("This project's GitHub repository lives",
@@ -191,6 +214,25 @@ server <- function(input, output) {
       
     model2_table
       
+    })
+    
+    output$top_10 <- render_gt({
+      
+
+      
+      fixed_names %>%
+        filter(indicator_name == input$varOI_x) %>%
+        select(country_name, indicator_name, x2010:x2016) %>%
+        pivot_longer(cols = x2010:x2016, names_to = "year", values_to = "rating") %>%
+        group_by(country_name) %>%
+        summarise(average = mean(rating, na.rm = TRUE)) %>%
+        arrange(desc(average)) %>%
+        slice(1:10) %>%
+        gt() %>%
+        tab_header(title = md("**Top 10**"),
+                       subtitle = md("*This is an Average From 2010 to 2016*")) %>%
+        tab_source_note(
+          source_note = md("*Source*: https://data.world/resiport/world-development-indicators"))
     })
     
     

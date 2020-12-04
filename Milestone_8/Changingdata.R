@@ -483,9 +483,7 @@ model2_table <- fit_2 %>%
 
 
 
-
-
-  ?scale_fill_manual
+  
   
   
 
