@@ -24,12 +24,13 @@ to_think_about <- "One aspect of this project I have been very careful about is
 
 
 tab1_row1_col <- "This graph shows us that there is a negative 
-                          correlation between the percentage of GDP that is 
-                          from Tax Revenue and that which is from Natural 
-                          Resources. While we cannot draw causal conclusions from
-                          the data, it does show that countries which rely on
-                          natural resources, are less likely to rely on tax
-                          revenue"
+                  correlation between the percentage of GDP that is 
+                  from Tax Revenue and that which is from Natural 
+                  Resources. While we cannot draw causal conclusions from
+                  the data, it does show that countries which rely on
+                  natural resources, are less likely to rely on tax
+                  revenue. Using this graph, it becomes easier to think how 
+                  exactly to put together the model."
 
 
 
@@ -117,5 +118,30 @@ regime_exp <- "In this section, you can see a visual of the different types of
 formula1 <- "$$ resource_i = \\beta_0 + \\beta_1x_{MIL, i} + \\beta_2x_{MON, i} 
                 + \\beta_3x_{MUL, i} + \\beta_4x_{SIN, i}  + \\beta_5taxrev_i +
                 \\beta_6x_{MIL, i}*taxrev_i + \\beta_7x_{MON, i}*taxrev_i +
-                \\beta_8x_{MUL, i}*taxrev_i + \\beta_9x_{SIN, i} + \\epsilon_i 
-              $$"
+                \\beta_8x_{MUL, i}*taxrev_i + \\beta_9x_{SIN, i}*taxrev_i + 
+                \\epsilon_i $$"
+
+formulaexpl <- "While the equation for this model might seem rather long, it is 
+                only because I have done an interaction term using a variable 
+                with five different categories (the regime types). The regime 
+                aspects of the equation either take a value of 0 or 1 depending
+                on if the regime is true or not. The taxrev parts refer to tax 
+                revenue as a percentage of GDP. Having things as a percentage of
+                GDP is particularly useful for making models becuase it means I 
+                don't have to concentrate as much on controlling for the size of
+                the country/its economy." 
+
+resultsform1a <- "One thing to note before looking at the values themselves is 
+                 that the intercept here is Democracy  hence why it does not
+                 have values."
+
+resultsform1b <- "The first thing to notice is the regimes which do not seem to
+                  give any clear answer. That applies for democracies, military
+                  rule, and singe party regimes. The confidence intervals all
+                  straddle 0 and are very large especially given that 
+                  the outcome is supposed to be somewhere between 0 and 100. 
+                  This may be a consequence of using countries. 
+                  There are only 8 countries assigned as singe regimes. This may
+                  be making it difficult to create good models."
+
+resultsform1c <- "As for the clearer conclusions,"
