@@ -457,7 +457,123 @@ regime_count <- regime_filter %>%
   tab_source_note(
     source_note = md("*Source*: https://cddrl.fsi.stanford.edu/
                      research/autocracies_of_the_world_dataset"))
+
+  # The following two tables are my regression gt tables for the model page.
+  # I then explain the values in the 'Interpretting the Model' section. I 
+  # include the intercepts as that is how I put together my stan_glm function.
    
+model1_table <- fit_1 %>%
+  tbl_regression(intercept = TRUE) %>%
+  as_gt() %>%
+  tab_header(title = "Regression of Natural Resource Dependence", 
+             subtitle = "The Effect of Tax Revenues and Regime Type on Resource
+                         Dependence")
+
+model2_table <- fit_2 %>%
+  tbl_regression(intercept = TRUE) %>%
+  as_gt() %>%
+  tab_header(title = "Regression of Democracy Indicator", 
+             subtitle = "The Effect of Resource Dependence on Tax Revenues")
+
+  # The following three graphs are done to visualise how the predicted natural
+  # resource revenues differs depending on the tax revenue as a percentage of 
+  # GDP.
+
+posteriorform1a <- posterior_epred(fit_1, newdata = newdata1a) %>%
+  as_tibble() %>%
+  rename("Monarchy" = `1`,
+         "Multiparty" = `2`) %>%
+  pivot_longer(names_to = "Regime",
+               values_to = "predicted",
+               cols = everything()) %>%
+  
+   # I want to set fill equal to the type of regime, I need to make sure that
+   # they are all in one column called regime. This is why I use the 
+   # pivot_longer. This also applies for the next two graphs.
+  
+  ggplot(aes(x = predicted, fill = Regime)) +
+  geom_histogram(aes(y = after_stat(count/sum(count))),
+                 bins = 100,
+                 alpha = 0.7,
+                 position = "identity") +
+  
+   # The position argument and an alpha value below 0 allows me to see the 
+   # overlap on the graph. This also applies for the next two graphs.
+  
+  scale_fill_manual(values = c("red2", "royalblue2")) +
+  labs(title = "Predicted Resource Revenue as a % of GDP",
+       subtitle = "This applies for when tax revenues as % of GDP  = 0",
+       y = "Probability",
+       x = "Natural Resource rent (% of GDP)")
+
+posteriorform1b <- posterior_epred(fit_1, newdata = newdata1b) %>%
+  as_tibble() %>%
+  rename("Monarchy" = `1`,
+         "Multiparty" = `2`) %>%
+  pivot_longer(names_to = "Regime",
+               values_to = "predicted",
+               cols = everything()) %>%
+  ggplot(aes(x = predicted, fill = Regime)) +
+  geom_histogram(aes(y = after_stat(count/sum(count))),
+                 bins = 100,
+                 alpha = 0.7,
+                 position = "identity") +
+  scale_fill_manual(values = c("red2", "royalblue2")) +
+  labs(title = "Predicted Resource Revenue as a % of GDP",
+       subtitle = "This applies for when tax revenues as % of GDP  = 10",
+       y = "Probability",
+       x = "Natural Resource rent (% of GDP)")
+
+posteriorform1c <- posterior_epred(fit_1, newdata = newdata1c) %>%
+  as_tibble() %>%
+  rename("Monarchy" = `1`,
+         "Multiparty" = `2`) %>%
+  pivot_longer(names_to = "Regime",
+               values_to = "predicted",
+               cols = everything()) %>%
+  ggplot(aes(x = predicted, fill = Regime)) +
+  geom_histogram(aes(y = after_stat(count/sum(count))),
+                 bins = 100,
+                 alpha = 0.8,
+                 position = "identity") +
+  scale_fill_manual(values = c("red2", "royalblue2")) +
+  labs(title = "Predicted Resource Revenue as a % of GDP",
+       subtitle = "This applies for when tax revenues as % of GDP  = 20",
+       y = "Probability",
+       x = "Natural Resource rent (% of GDP)")
+
+
+  # This graph shows the relationship between natural resources and the 
+  # predicted democratic rating.
+
+posteriorform2 <- posterior_epred(fit_2, newdata = newdata2) %>%
+  as_tibble() %>%
+  rename("0" = `1`,
+         "10" = `2`,
+         "20" = `3`,
+         "30" = `4`,
+         "40" = `5`) %>%
+  pivot_longer(names_to = "resource_perc",
+               values_to = "predicted",
+               cols = everything()) %>%
+  
+  # I do the pivot_longer to get all the resource percentages in one column so 
+  # I can set it to fill in my graph.
+  
+  ggplot(aes(x = predicted, fill = resource_perc)) +
+  geom_histogram(aes(y = after_stat(count/sum(count))),
+                 bins = 300,
+                 alpha = 0.8,
+                 position = "identity") +
+  scale_fill_manual(values = c("red2", "royalblue2", "yellow2", "springgreen2",
+                               "slateblue2")) +
+  labs(title = "Posterior Prediction for Democracy Rating",
+       y = "Probability",
+       x = "Predicted Democracy Rating (-10 to 10)",
+       fill = "Natural Resource Revenue \n (As % of GDP)") +
+  theme_linedraw()
+
+
 
 
   ## FOR THE MODEL
@@ -540,21 +656,21 @@ d3 <- d2 %>%
          resource_perc = `Total natural resources rents (% of GDP)`) 
 
 
+  # Now that I have my data sets already, I can put them into stan_glm for my
+  # regression. fit_1 deals with predicting the resource revenues of a country
+  # as a percentage of GDP. fit_2 deals with predicting the democracy rating of
+  # a country depending on its reliance on natural resources.
 
 fit_1 <- stan_glm(resource_perc ~ regime_r + tax_rev_perc + regime_r*tax_rev_perc,
                   data = d3,
                   refresh = 0)
 
+fit_2 <- stan_glm(dem_indicator ~ resource_perc,
+                  data = d3,
+                  refresh = 0)
 
-# outcome as resource percentage, input as regime type and % of tax. consider
-# gdp growth, population indicator.
+  # These newdata tables are used for creating the posterior_epred.
 
-model1_table <- fit_1 %>%
-  tbl_regression(intercept = TRUE) %>%
-  as_gt() %>%
-  tab_header(title = "Regression of Natural Resource Dependence", 
-             subtitle = "The Effect of Tax Revenues and Regime Type on Resource
-                         Dependence")
 
 newdata1a <- tibble(regime_r = c("Monarchy", "Multiparty"),
                    tax_rev_perc = 0)
@@ -565,95 +681,9 @@ newdata1b <- tibble(regime_r = c("Monarchy", "Multiparty"),
 newdata1c <- tibble(regime_r = c("Monarchy", "Multiparty"),
                     tax_rev_perc = 20)
 
-posteriorform1a <- posterior_epred(fit_1, newdata = newdata1a) %>%
-  as_tibble() %>%
-  rename("Monarchy" = `1`,
-         "Multiparty" = `2`) %>%
-  pivot_longer(names_to = "Regime",
-               values_to = "predicted",
-               cols = everything()) %>%
-  ggplot(aes(x = predicted, fill = Regime)) +
-  geom_histogram(aes(y = after_stat(count/sum(count))),
-                 bins = 100,
-                 alpha = 0.7,
-                 position = "identity") +
-  scale_fill_manual(values = c("red2", "royalblue2")) +
-  labs(title = "Predicted Resource Revenue as a % of GDP",
-       subtitle = "This applies for when tax revenues as % of GDP  = 0",
-       y = "Probability",
-       x = "Natural Resource rent (% of GDP)")
-
-posteriorform1b <- posterior_epred(fit_1, newdata = newdata1b) %>%
-  as_tibble() %>%
-  rename("Monarchy" = `1`,
-         "Multiparty" = `2`) %>%
-  pivot_longer(names_to = "Regime",
-               values_to = "predicted",
-               cols = everything()) %>%
-  ggplot(aes(x = predicted, fill = Regime)) +
-  geom_histogram(aes(y = after_stat(count/sum(count))),
-                 bins = 100,
-                 alpha = 0.7,
-                 position = "identity") +
-  scale_fill_manual(values = c("red2", "royalblue2")) +
-  labs(title = "Predicted Resource Revenue as a % of GDP",
-       subtitle = "This applies for when tax revenues as % of GDP  = 10",
-       y = "Probability",
-       x = "Natural Resource rent (% of GDP)")
-
-posteriorform1c <- posterior_epred(fit_1, newdata = newdata1c) %>%
-  as_tibble() %>%
-  rename("Monarchy" = `1`,
-         "Multiparty" = `2`) %>%
-  pivot_longer(names_to = "Regime",
-               values_to = "predicted",
-               cols = everything()) %>%
-  ggplot(aes(x = predicted, fill = Regime)) +
-  geom_histogram(aes(y = after_stat(count/sum(count))),
-                 bins = 100,
-                 alpha = 0.8,
-                 position = "identity") +
-  scale_fill_manual(values = c("red2", "royalblue2")) +
-  labs(title = "Predicted Resource Revenue as a % of GDP",
-       subtitle = "This applies for when tax revenues as % of GDP  = 20",
-       y = "Probability",
-       x = "Natural Resource rent (% of GDP)")
-
-fit_2 <- stan_glm(dem_indicator ~ resource_perc,
-                  data = d3,
-                  refresh = 0)
-
-model2_table <- fit_2 %>%
-  tbl_regression(intercept = TRUE) %>%
-  as_gt() %>%
-  tab_header(title = "Regression of Democracy Indicator", 
-             subtitle = "The Effect of Resource Dependence on Tax Revenues")
-  
-
 newdata2 <- tibble(resource_perc = c(0, 10, 20, 30, 40))
 
-posteriorform2 <- posterior_epred(fit_2, newdata = newdata2) %>%
-  as_tibble() %>%
-  rename("0" = `1`,
-         "10" = `2`,
-         "20" = `3`,
-         "30" = `4`,
-         "40" = `5`) %>%
-  pivot_longer(names_to = "resource_perc",
-               values_to = "predicted",
-               cols = everything()) %>%
-  ggplot(aes(x = predicted, fill = resource_perc)) +
-  geom_histogram(aes(y = after_stat(count/sum(count))),
-                 bins = 300,
-                 alpha = 0.8,
-                 position = "identity") +
-  scale_fill_manual(values = c("red2", "royalblue2", "yellow2", "springgreen2",
-                               "slateblue2")) +
-  labs(title = "Posterior Prediction for Democracy Rating",
-       y = "Probability",
-       x = "Predicted Democracy Rating (-10 to 10)",
-       fill = "Natural Resource Revenue \n (As % of GDP)") +
-  theme_linedraw()
+
 
 
   
