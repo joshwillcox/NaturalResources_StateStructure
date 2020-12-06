@@ -1,5 +1,5 @@
 
-## Loading all my packages
+  ## Loading all my packages
 
 library(tidyverse)
 library(readr)
@@ -20,11 +20,11 @@ library(broom.mixed)
 library(gt)
 
 
-## Reading in the Data in order to create my graphs and tables and models.
+  ## Reading in the Data in order to create my graphs and tables and models.
 
 source("reading_in.R")
 
-## Data Changing
+  ## CREATING THE NECESSARY DATA SETS FOR EASY USE IN MODELS AND GRAPHS
 
 fixed_names1 <- first_clean %>%
   mutate(country_name = str_replace(country_name,
@@ -265,17 +265,18 @@ fixed_names2 <- second_clean %>%
                                     pattern = "St. Lucia",
                                     replacement = "Saint Lucia"))
 
-# I had to create these fixed_names1 and 2 because the country names needed 
-# to match the countrynames_worldmap data frame. There were lots of countries
-# with "The" that needed removing or "Rep." that needed to be replaced with 
-# "Republic" or "Is." with "Islands". There is no difference between fixed 1
-# and fixed 2 other than the fact that they have different indicators and 
-# I got them at different times.
+  # I had to create these fixed_names1 and 2 because the country names needed 
+  # to match the countrynames_worldmap data frame. There were lots of countries
+  # with "The" that needed removing or "Rep." that needed to be replaced with 
+  # "Republic" or "Is." with "Islands". There is no difference between fixed 1
+  # and fixed 2 other than the fact that they have different indicators and 
+  # I got them at different times. The data set I initially got them from was 
+  # huge, so there was no chance of uploading it to github.
 
 fixed_names <- fixed_names1 %>%
   rbind(fixed_names2)
 
-# I binded them together to create the full data set for the project.
+  # I bound them together to create the full data set for the project.
 
 
 
@@ -283,13 +284,16 @@ world <- ne_countries(scale = "medium",
                       returnclass = "sf")
 
 
+
 countrynames_worldmap <- world %>%
   select(name,
          geometry) %>%
   rename(country_name = name)
 
-# This gives me a data set for all the world's countreis and their geometry.
-# I then use it to create all the maps below.
+  # This gives me a data set for all the world's countries and their geometry.
+  # I then use it to create all the maps below. When I want to join it with 
+  # another data set, I have to put countrynames_worldmap first. If, not it 
+  # returns a tibble which is the wrong format for making the map.
 
 regime_filter <- regime_type %>%
   select(country, year, regime_r) %>%
@@ -333,22 +337,63 @@ regime_filter <- regime_type %>%
                                     replacement = "Congo")) %>%
   filter(! regime_r == "NA")
 
-# This data set tells me the type of regime within each country.
+  # This data set tells me the type of regime within each country for 2011. They 
+  # are divided into either Monarchies, Democracies, Military rule, Single Party
+  # regimes, and Multiparty regimes. There were a couple put down as "NA". I got 
+  # rid of them because I didn't want to code them myself.
 
 
-first_graph <- first_clean %>%
+ ## THE GRAPHS AND TABLES
+
+# This graph gives me an idea of the relationship between dependence on natural 
+# resources and tax revenues as a percentage of GDP.
+
+bestfit_graph <- first_clean %>%
   select(country_name,
          country_code,
          indicator_name,
-         x2015:x2018) %>%
-  drop_na() %>%
+         x2010:x2015) %>%
+  
+  # I take a couple of years because it's quite frequent that data isn't 
+  # collected every year in some countries. Taking a 6 year gap means 
+  # that if only one year has a value, I can use that.
+  # Similarly, resources prices 
+  # fluctuate a lot and so I wanted to make sure I wasn't using the data from 
+  # a year when prices where unusually high or low. The gap is only 6 years
+  # , however, in order to make sure nothing to major could have happened.
+  # This could have been the case if I'd used a couple decades.
+  
   filter(indicator_name %in% c("Total natural resources rents (% of GDP)",
                                "Tax revenue (% of GDP)")) %>%
-  mutate(average = (x2015 + x2016 + x2017 +x2018)/4) %>%
-  filter(average > 0) %>%
-  pivot_wider(names_from = indicator_name, values_from = average,
-              id_cols = c("country_name", "country_code")) %>%
+  select(country_name, x2010:x2015, indicator_name) %>%
+  pivot_longer(cols = x2010:x2015,
+               names_to = "Year",
+               values_to = "value") %>%
+  
+  # In order to get an average for each indicator over the six years, it needs 
+  # to be in a tidy format, hence why I pivot here.
+  
+  group_by(country_name, indicator_name) %>%
+  
+  # I want to get a value for each indicator within each country. 
+  
+  summarise(average = mean(value, na.rm = TRUE), .groups = "keep") %>%
+  
+  # I put the na.rm argument as TRUE for the reason mentioned earlier. The 
+  # government may only record the values once every two years. I don't want to 
+  # lose this data and get NA values, so I put this argument in. The .groups 
+  # argument gets rid of the error.
+  
+  pivot_wider(names_from = indicator_name, values_from = average) %>%
+  
+  # For making a graph, I need it wider again.
+  
   drop_na() %>%
+  
+  # For some countries, I have values for one but NaN for the other. Sadly, I 
+  # need to get rid of the NAs for the sake of the graph's format. I end up 
+  # losing some important data like Algeria.
+  
   clean_names() %>% 
   ggplot(aes(x = total_natural_resources_rents_percent_of_gdp,
              y = tax_revenue_percent_of_gdp)) +
@@ -356,16 +401,24 @@ first_graph <- first_clean %>%
   geom_smooth(method = lm,
               se = FALSE,
               color = "dodgerblue") +
+  
+  # I used these colours to make the visual clear.
+  
   labs(x = "Natural Resources Rent as % of GDP",
        y = "Tax Revenue as % of GDP",
-       title = "Relationship Between Tax Revenue and Natural Resources Rent as % of GDP",
+       title = "Relationship Between Tax Revenue and 
+                Natural Resources Rent as % of GDP (2010-2015)",
        subtitle  = "Does Depending on Natural Resources Mean Taxing Less?",
        caption = "Source: World Bank Development Inidicators") +
   theme_linedraw()
 
-# This graph gives me an idea of the relationship between dependence on natural 
-# resources and tax revenues as a percentage of GDP.
 
+
+# A map showing me the different regimes types on a world map. I understand 
+# that I have only done on year (and the year just when the Arab spring was 
+# starting so regimes may have been changing). Despite that, it was hard to 
+# get an 'average' regime because they were characters. While changes may have 
+# been happening, I think it is still useful for visualisation purposes.
 
 regime_map <- countrynames_worldmap %>%
   left_join(regime_filter) %>%
@@ -382,7 +435,11 @@ regime_map <- countrynames_worldmap %>%
          caption = "Source: https://cddrl.fsi.stanford.edu/
          research/autocracies_of_the_world_dataset")
 
-# A map showing me the different regimes types on a world map.
+
+# This table gives me a count of all the regimes in my data set. It is important
+# for the next tab where I talk about limitations. There are only so many 
+# monarchies in the world and only so many single party regimes. The data set 
+# is hardly large enough to make concrete conclusions. 
 
 regime_count <- regime_filter %>%
   group_by(regime_r) %>%
@@ -393,14 +450,26 @@ regime_count <- regime_filter %>%
   gt() %>%
   tab_header(title = md("**Regime Types in 2011**"),
              subtitle = md("*This only includes 155 countries*")) %>%
-  tab_source_note(
-    source_note = md("*Source*: https://cddrl.fsi.stanford.edu/research/autocracies_of_the_world_dataset"))
   
+  # I found out on some help sites that usig the asteriks makes the font bold or
+  # in italics
+  
+  tab_source_note(
+    source_note = md("*Source*: https://cddrl.fsi.stanford.edu/
+                     research/autocracies_of_the_world_dataset"))
+   
 
 
+  ## FOR THE MODEL
+
+
+  # d1 and d2 are joined together and then used as the data set for the 
+  # stan_glm. d1  is the data with regime types and d2 is the data with the 
+  # indicators for tax revenue and natural resources as a percentage of GDP.
 
 d1 <- democracy_inidcator %>%
-  rename(democracy_indicator = `Political Regime (OWID based on Polity IV and Wimmer & Min)`,
+  rename(democracy_indicator =
+           `Political Regime (OWID based on Polity IV and Wimmer & Min)`,
          country_name = "Entity") %>%
   mutate(country_name = str_replace(country_name,
                                     pattern = "Republic",
@@ -429,10 +498,21 @@ d1 <- democracy_inidcator %>%
   mutate(country_name = str_replace(country_name,
                                     pattern = "Democratic Rep. of Congo",
                                     replacement = "Dem. Rep. Congo")) %>%
+  
+  # I again had to the same thing  where I changed the country names 
+  # so that everything is in the same format. 
+  
   filter(Year %in% c(2010:2015)) %>%
+  
+  # It's important that I use the same years throughout. 
+  
   group_by(country_name) %>% 
-  summarise(dem_indicator = mean(democracy_indicator, na.rm = TRUE))
+  summarise(dem_indicator = mean(democracy_indicator,
+                                 na.rm = TRUE),
+            .groups = "keep")
 
+ 
+  # The purpose of d2 is mentioned above.
 
 d2 <- fixed_names %>% 
   filter(indicator_name %in% c("Total natural resources rents (% of GDP)",
@@ -442,16 +522,22 @@ d2 <- fixed_names %>%
                names_to = "Year",
                values_to = "value") %>%
   group_by(country_name, indicator_name) %>%
-  summarise(average = mean(value, na.rm = TRUE)) %>%
+  summarise(average = mean(value, 
+                           na.rm = TRUE)) %>%
   pivot_wider(names_from = indicator_name, values_from = average)
+
+
+  # d3 is when I put together regime type, dem_indicator, and my revenue  
+  # indicators all into one tibble. This is what I then use for my models. I 
+  # start with d2 because it has the most data and I don't want to lose any of
+  # it. 
+ 
 
 d3 <- d2 %>%
   left_join(d1, by = "country_name") %>%
   left_join(regime_filter, by = "country_name") %>%
   rename(tax_rev_perc = `Tax revenue (% of GDP)`,
          resource_perc = `Total natural resources rents (% of GDP)`) 
-
-
 
 
 
@@ -470,20 +556,106 @@ model1_table <- fit_1 %>%
              subtitle = "The Effect of Tax Revenues and Regime Type on Resource
                          Dependence")
 
+newdata1a <- tibble(regime_r = c("Monarchy", "Multiparty"),
+                   tax_rev_perc = 0)
 
-fit_2 <- stan_glm(tax_rev_perc ~ resource_perc + regime_r,
+newdata1b <- tibble(regime_r = c("Monarchy", "Multiparty"),
+                   tax_rev_perc = 10)
+
+newdata1c <- tibble(regime_r = c("Monarchy", "Multiparty"),
+                    tax_rev_perc = 20)
+
+posteriorform1a <- posterior_epred(fit_1, newdata = newdata1a) %>%
+  as_tibble() %>%
+  rename("Monarchy" = `1`,
+         "Multiparty" = `2`) %>%
+  pivot_longer(names_to = "Regime",
+               values_to = "predicted",
+               cols = everything()) %>%
+  ggplot(aes(x = predicted, fill = Regime)) +
+  geom_histogram(aes(y = after_stat(count/sum(count))),
+                 bins = 100,
+                 alpha = 0.7,
+                 position = "identity") +
+  scale_fill_manual(values = c("red2", "royalblue2")) +
+  labs(title = "Predicted Resource Revenue as a % of GDP",
+       subtitle = "This applies for when tax revenues as % of GDP  = 0",
+       y = "Probability",
+       x = "Natural Resource rent (% of GDP)")
+
+posteriorform1b <- posterior_epred(fit_1, newdata = newdata1b) %>%
+  as_tibble() %>%
+  rename("Monarchy" = `1`,
+         "Multiparty" = `2`) %>%
+  pivot_longer(names_to = "Regime",
+               values_to = "predicted",
+               cols = everything()) %>%
+  ggplot(aes(x = predicted, fill = Regime)) +
+  geom_histogram(aes(y = after_stat(count/sum(count))),
+                 bins = 100,
+                 alpha = 0.7,
+                 position = "identity") +
+  scale_fill_manual(values = c("red2", "royalblue2")) +
+  labs(title = "Predicted Resource Revenue as a % of GDP",
+       subtitle = "This applies for when tax revenues as % of GDP  = 10",
+       y = "Probability",
+       x = "Natural Resource rent (% of GDP)")
+
+posteriorform1c <- posterior_epred(fit_1, newdata = newdata1c) %>%
+  as_tibble() %>%
+  rename("Monarchy" = `1`,
+         "Multiparty" = `2`) %>%
+  pivot_longer(names_to = "Regime",
+               values_to = "predicted",
+               cols = everything()) %>%
+  ggplot(aes(x = predicted, fill = Regime)) +
+  geom_histogram(aes(y = after_stat(count/sum(count))),
+                 bins = 100,
+                 alpha = 0.8,
+                 position = "identity") +
+  scale_fill_manual(values = c("red2", "royalblue2")) +
+  labs(title = "Predicted Resource Revenue as a % of GDP",
+       subtitle = "This applies for when tax revenues as % of GDP  = 20",
+       y = "Probability",
+       x = "Natural Resource rent (% of GDP)")
+
+fit_2 <- stan_glm(dem_indicator ~ resource_perc,
                   data = d3,
                   refresh = 0)
 
 model2_table <- fit_2 %>%
   tbl_regression(intercept = TRUE) %>%
   as_gt() %>%
-  tab_header(title = "Regression of Tax Revenues as a Percentage of GDP", 
-             subtitle = "The Effect of Resource Dependence on Tax Revenues") 
-
-
-
+  tab_header(title = "Regression of Democracy Indicator", 
+             subtitle = "The Effect of Resource Dependence on Tax Revenues")
   
+
+newdata2 <- tibble(resource_perc = c(0, 10, 20, 30, 40))
+
+posteriorform2 <- posterior_epred(fit_2, newdata = newdata2) %>%
+  as_tibble() %>%
+  rename("0" = `1`,
+         "10" = `2`,
+         "20" = `3`,
+         "30" = `4`,
+         "40" = `5`) %>%
+  pivot_longer(names_to = "resource_perc",
+               values_to = "predicted",
+               cols = everything()) %>%
+  ggplot(aes(x = predicted, fill = resource_perc)) +
+  geom_histogram(aes(y = after_stat(count/sum(count))),
+                 bins = 300,
+                 alpha = 0.8,
+                 position = "identity") +
+  scale_fill_manual(values = c("red2", "royalblue2", "yellow2", "springgreen2",
+                               "slateblue2")) +
+  labs(title = "Posterior Prediction for Democracy Rating",
+       y = "Probability",
+       x = "Predicted Democracy Rating (-10 to 10)",
+       fill = "Natural Resource Revenue \n (As % of GDP)") +
+  theme_linedraw()
+
+
   
   
 
