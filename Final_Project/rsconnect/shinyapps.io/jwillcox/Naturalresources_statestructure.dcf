@@ -5,8 +5,8 @@ account: jwillcox
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3361238
-bundleId: 3951144
+bundleId: 3954495
 url: https://jwillcox.shinyapps.io/Naturalresources_statestructure/
-when: 1607277081.62269
+when: 1607342497.05247
 asMultiple: FALSE
 asStatic: FALSE

@@ -149,7 +149,9 @@ tabPanel("Model",
                                align = "center"),
                             p(resultsform1a),
                             p(resultsform1b),
-                            p(resultsform1c))),
+                            p(resultsform1c),
+                            p(resultsform1d))),
+            gt_output("model3_table"),
             fluidRow(column(4, 
                             plotOutput("posteriorform1a")),
                      column(4,
@@ -335,6 +337,11 @@ server <- function(input, output) {
       
       posteriorform2
       
+    })
+    
+    output$model3_table <- render_gt({
+      
+      model3_table
     })
     
     

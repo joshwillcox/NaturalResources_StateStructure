@@ -543,7 +543,9 @@ d3 <- d2 %>%
   # Now that I have my data sets already, I can put them into stan_glm for my
   # regression. fit_1 deals with predicting the resource revenues of a country
   # as a percentage of GDP. fit_2 deals with predicting the democracy rating of
-  # a country depending on its reliance on natural resources.
+  # a country depending on its reliance on natural resources. fit_3 is used to 
+  # put my prediction graphs into perspective by answering questions such as 
+  # does it make sense to talk of a monarchy where tax revenue is 20% of GDP?
 
 fit_1 <- stan_glm(resource_perc ~ regime_r + tax_rev_perc + 
                     regime_r*tax_rev_perc,
@@ -554,7 +556,13 @@ fit_2 <- stan_glm(dem_indicator ~ resource_perc,
                   data = d3,
                   refresh = 0)
 
+fit_3 <- stan_glm(tax_rev_perc ~ dem_indicator,
+                  data = d3,
+                  refresh = 0)
+
   # These newdata tables are used for creating the posterior_epred.
+
+
 
 
 newdata1a <- tibble(regime_r = c("Monarchy", "Multiparty"),
@@ -568,22 +576,32 @@ newdata1c <- tibble(regime_r = c("Monarchy", "Multiparty"),
 
 newdata2 <- tibble(resource_perc = c(0, 10, 20, 30, 40))
 
-# The following two tables are my regression gt tables for the model page.
-# I then explain the values in the 'Interpretting the Model' section. I 
+# The following three tables are my regression gt tables for the model page.
+# I then explain the values in the 'Interpreting the Model' section. I 
 # include the intercepts as that is how I put together my stan_glm function.
 
 model1_table <- fit_1 %>%
   tbl_regression(intercept = TRUE) %>%
   as_gt() %>%
   tab_header(title = "Regression of Natural Resource Dependence", 
-             subtitle = "The Effect of Tax Revenues and Regime Type on Resource
-                         Dependence")
+             subtitle = "The Relationship Between Tax Revenues
+                         and Regime Type on Resource Dependence")
 
 model2_table <- fit_2 %>%
   tbl_regression(intercept = TRUE) %>%
   as_gt() %>%
   tab_header(title = "Regression of Democracy Indicator", 
-             subtitle = "The Effect of Resource Dependence on Tax Revenues")
+             subtitle = "The Relationships Between Resource Dependence 
+                         and Tax Revenues")
+
+model3_table <- fit_3 %>%
+  tbl_regression(intercept = TRUE) %>%
+  as_gt() %>%
+  tab_header(title = "Regression of Tax Revenue", 
+             subtitle = "The Relationship Between Democracy Indicators and 
+                         Tax Revenue.")
+
+
 
 # The following three graphs are done to visualise how the predicted natural
 # resource revenues differs depending on the tax revenue as a percentage of 
@@ -682,6 +700,8 @@ posteriorform2 <- posterior_epred(fit_2, newdata = newdata2) %>%
        x = "Predicted Democracy Rating (-10 to 10)",
        fill = "Natural Resource Revenue \n (As % of GDP)") +
   theme_linedraw()
+
+
 
 
 
