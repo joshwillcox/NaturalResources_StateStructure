@@ -64,40 +64,19 @@ tabPanel("Comparing Countries",
     h4("Measurements of the State:"),
           selectInput("varOI_x",
                       "Country Measurements",
-                      choices = c("Military expenditure as % of general 
-                                  government expenditure" = "Military 
-                                  expenditure (% of general government 
-                                  expenditure)",
-                                  "Mineral rents as % of GDP" = "Mineral rents
-                                  (% of GDP)",
-                                  "Oil rents as % of GDP" = "Oil rents 
-                                  (% of GDP)",
-                                  "Tax revenue as % of GDP" = "Tax revenue 
-                                  (% of GDP)",
-                                  "Total natural resources rents as % of GDP" =
-                                    "Total natural resources rents (% of GDP)",
-                                  "Armed forces personnel as % of total labor 
-                                  force" = "Armed forces personnel 
-                                  (% of total labor force)",
-                                  "Bribery incidence" = 
-                                    "Bribery incidence 
-                                  (% of firms experiencing at least one 
-                                  bribe payment request)",
-                                  "Ease of doing business index" = 
-                                    "Ease of doing business index 
-                                  (1=most business-friendly regulations)",
-                                  "GINI index" =
-                                    "GINI index (World Bank estimate)",
-                                  "Government expenditure on education, total
-                                  as % of GDP" = 
-                                    "Government expenditure on education, 
-                                  total (% of GDP)",
-                                  "Health expenditure, public as % of GDP" = 
-                                    "Health expenditure, public (% of GDP)",
-                                  "Internet users (per 100 people)" = 
-                                    "Internet users (per 100 people)",
-                                  "Strength of legal rights index 
-                                  (0=weak to 12=strong)",
+                      choices = c("Military expenditure as % of general government expenditure" = "Military expenditure (% of general government expenditure)",
+                                  "Mineral rents as % of GDP" = "Mineral rents (% of GDP)",
+                                  "Oil rents as % of GDP" = "Oil rents (% of GDP)",
+                                  "Tax revenue as % of GDP" = "Tax revenue (% of GDP)",
+                                  "Total natural resources rents as % of GDP" = "Total natural resources rents (% of GDP)",
+                                  "Armed forces personnel as % of total labor force" = "Armed forces personnel (% of total labor force)",
+                                  "Bribery incidence" = "Bribery incidence (% of firms experiencing at least one bribe payment request)",
+                                  "Ease of doing business index" = "Ease of doing business index (1=most business-friendly regulations)",
+                                  "GINI index" = "GINI index (World Bank estimate)",
+                                  "Government expenditure on education, total as % of GDP" = "Government expenditure on education, total (% of GDP)",
+                                  "Health expenditure, public as % of GDP" = "Health expenditure, public (% of GDP)",
+                                  "Internet users (per 100 people)" = "Internet users (per 100 people)",
+                                  "Strength of legal rights index (0=weak to 12=strong)",
                                   "Time required to get electricity (days)"))),
                             
                 mainPanel(plotOutput("Country_Indicator"))),
@@ -126,7 +105,7 @@ tabPanel("Comparing Countries",
         Autocracies of the World, 1950-2012 (Version 1.0).Dataset, 
         Stanford University.")),
 
-tabPanel("Model",
+tabPanel("Model Part 1",
   h3(strong("Putting Together the Model"), align = "center"),
                           
   fluidPage(fluidRow(column(7, 
@@ -157,17 +136,18 @@ tabPanel("Model",
                      column(4,
                             plotOutput("posteriorform1b")),
                      column(4,
-                            plotOutput("posteriorform1c"))),
+                            plotOutput("posteriorform1c")))),
+tabPanel("Model Part 2",
   h3(strong("Relationship with Democracy"), align = "center"),
   fluidPage(withMathJax(),
             helpText(formula2)),
   p(formulaexpl2),
   fluidPage(fluidRow(column(6,
                             h3(strong("Interpretting the Model"), 
-                                align = "center"),
+                                      align = "center"),
                             p(resultsform2a)),
-                      column(6,
-                             gt_output("model2_table")))),
+                     column(6,
+                            gt_output("model2_table")))),
   plotOutput("posteriorform2")),
                  
 tabPanel("About",
