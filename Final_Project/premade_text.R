@@ -180,12 +180,16 @@ resultsform1d <- "While, as seen from the graphs below, we can create graphs and
                   revenue is 20% of GDP, the table below attempts to put this
                   into perspective. Is it likely that a country whose tax 
                   revenue is 20% of GDP is a monarchy or some other type of non
-                  democratic regime? No. When the democracy rating is 0 (on a 
-                  scale from -10 to 10), the predicted tax revenue as % of GDP
-                  is below 20%. What this should tell us is that we 
+                  democratic regime? No. The input here is a democracy rating 
+                  from -10 to 10 with the ouput being the tax revenue as a 
+                  percentage of GDP. When the democracy rating is 0 (higher than
+                  the rating for a monarchy), the predicted tax revenue is less
+                  than 20% of GDP. It therefore doesn't really make sense to use 
+                  our data to predict cases that are highly unlikely.What this 
+                  should tell us is that we 
                   need to be careful about what exactly we use our model to 
-                  predict. Is our quesiton within the scope of the model's 
-                  capabilities?"
+                  predict, always asking : Is our quesiton within the scope of
+                  the model's capabilities?"
 
 formula2 <- "$$ democracy_i = \\beta_0 + \\beta_1resource_i 
                 \\epsilon_i $$"
@@ -198,7 +202,7 @@ formulaexpl2 <- "In this section, I wanted to put aside state efficiency and
                  make it an output. I therefore found a different data set that
                  ranked democracies from -10 to 10 with the 10 being a full 
                  democracy and -10 being a full autocracy. The data is set 
-                 is used briefly above."
+                 is used briefly in 'Model Part 1'."
 
 resultsform2a <- "While this regression is somewhat simpler, it does a good job
                   of looking at the relationship between dependence on natural

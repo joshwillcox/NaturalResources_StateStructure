@@ -421,7 +421,7 @@ bestfit_graph <- first_clean %>%
 # been happening, I think it is still useful for visualisation purposes.
 
 regime_map <- countrynames_worldmap %>%
-  left_join(regime_filter) %>%
+  left_join(regime_filter, by = "country_name") %>%
   ggplot(aes(fill = regime_r)) +
     geom_sf() +
     scale_fill_discrete(na.translate = FALSE,
@@ -523,7 +523,8 @@ d2 <- fixed_names %>%
                values_to = "value") %>%
   group_by(country_name, indicator_name) %>%
   summarise(average = mean(value, 
-                           na.rm = TRUE)) %>%
+                           na.rm = TRUE),
+            .groups = "keep") %>%
   pivot_wider(names_from = indicator_name, values_from = average)
 
 

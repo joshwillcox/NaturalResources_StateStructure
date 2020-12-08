@@ -160,7 +160,8 @@ tabPanel("About",
   p(about_p3),
   h2(strong("Acknowledgements"), align = "center"),
   p("Thank you to the Professor and Teaching Staff at Gov50 for
-    teaching me the art of data science"),
+    teaching me the art of data science. All the data sources that I used are
+    mentioned in the reading_in and Changingdata files."),
   p("This project's GitHub repository lives",
     a("here", href = "https://github.com/joshwillcox/Shiny_App_Milestone_4")))
 )
